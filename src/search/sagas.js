@@ -1,15 +1,17 @@
 import {debounce, put, call, takeEvery, select} from 'redux-saga/effects';
 import {getSearch, getComments} from './api';
 import {reqSearch, UPDATE_TERM, selectSearchStr} from './ducks';
+import {selectSortStr} from '../sort/ducks';
 
 export function* searchWorker() {
   try {
     const searchStr = yield select(selectSearchStr);
+    const order = yield select(selectSortStr);
+
     if (!searchStr || searchStr.length < 5) {
       return;
     }
 
-    const order = 'date';
     const {items, error} = yield call(getSearch, searchStr, order);
 
     if (error) {
@@ -21,12 +23,10 @@ export function* searchWorker() {
     const commentData = yield call(getComments, ids.join(','));
 
     const data = items.map(video => {
-      const {statistics} = commentData.items.find(
-        ({id}) => id === video.id.videoId,
-      );
+      const found = commentData.items.find(({id}) => id === video.id.videoId);
       return {
         ...video,
-        statistics,
+        statistics: found ? found.statistics : {commentCount: 0},
       };
     });
 

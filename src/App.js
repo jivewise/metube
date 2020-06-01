@@ -6,6 +6,7 @@ import reducers from './reducers';
 import configureStore from './store';
 import Search from './search';
 import List from './list';
+import Sort from './sort';
 
 import './App.css';
 
@@ -15,7 +16,8 @@ function App() {
   return (
     <Provider store={store}>
       <Search.UI />
-      <List .UI />
+      <Sort.UI />
+      <List.UI />
     </Provider>
   );
 }
